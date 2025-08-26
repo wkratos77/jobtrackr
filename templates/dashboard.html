@@ -5,7 +5,7 @@
 <h2 class="mb-4">Your Jobs</h2>
 
 <!-- Summary counts -->
-<div class="mb-3">
+<div class="alert alert-secondary">
   <strong>Summary:</strong>
   Applied: {{ counts['Applied'] }} |
   Interview: {{ counts['Interview'] }} |
@@ -14,15 +14,34 @@
   Total: {{ counts['Total'] }}
 </div>
 
-<!-- Status Pie + quick rates -->
-<div class="row mb-4">
-  <div class="col-md-6">
-    <canvas id="statusPie"></canvas>
+<!-- Charts row -->
+<div class="row g-4 mb-4">
+  <!-- Status doughnut + rates -->
+  <div class="col-md-5">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-2">Status Breakdown</h5>
+        <div style="height:160px;">
+          <canvas id="statusPie"></canvas>
+        </div>
+        <div class="mt-3 small text-muted">
+          <span class="me-3">Interview rate: <strong>{{ rates.interview_rate if rates else 0 }}%</strong></span>
+          <span>Offer rate: <strong>{{ rates.offer_rate if rates else 0 }}%</strong></span>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col-md-6">
-    <h5>Rates</h5>
-    <p>Interview rate: {{ rates.interview_rate if rates else 0 }}%</p>
-    <p>Offer rate: {{ rates.offer_rate if rates else 0 }}%</p>
+
+  <!-- Applications per Month bar -->
+  <div class="col-md-7">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-2">Applications per Month</h5>
+        <div style="height:160px;">
+          <canvas id="appsPerMonth"></canvas>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -47,44 +66,48 @@
   </div>
   <div class="col-md-3 d-flex align-items-end">
     <button class="btn btn-primary me-2" type="submit">Filter</button>
-    <a class="btn btn-secondary" href="{{ url_for('jobs.dashboard') }}">Reset</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('jobs.dashboard') }}">Reset</a>
   </div>
 </form>
 
 {% if jobs %}
-  <table class="table table-bordered table-striped">
-    <thead class="table-dark">
-      <tr>
-        <th>Company</th>
-        <th>Role</th>
-        <th>Status</th>
-        <th>Applied On</th>
-        <th>Link</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for j in jobs %}
-        <tr>
-          <td>{{ j.company }}</td>
-          <td>{{ j.role }}</td>
-          <td>{{ j.status }}</td>
-          <td>{{ j.applied_on or "" }}</td>
-          <td>{% if j.link %}<a href="{{ j.link }}" target="_blank">Open</a>{% endif %}</td>
-          <td>
-            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('jobs.edit_form', job_id=j.id) }}">Edit</a>
-            <form action="{{ url_for('jobs.delete', job_id=j.id) }}" method="post" style="display:inline" onsubmit="return confirm('Delete this job?');">
-              <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-            </form>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-hover table-striped mb-0 align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Applied On</th>
+            <th>Link</th>
+            <th style="width:140px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for j in jobs %}
+            <tr>
+              <td>{{ j.company }}</td>
+              <td>{{ j.role }}</td>
+              <td>{{ j.status }}</td>
+              <td>{{ j.applied_on or "" }}</td>
+              <td>{% if j.link %}<a href="{{ j.link }}" target="_blank">Open</a>{% endif %}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary me-1" href="{{ url_for('jobs.edit_form', job_id=j.id) }}">Edit</a>
+                <form action="{{ url_for('jobs.delete', job_id=j.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this job?');">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   {% if page_obj and page_obj.pages > 1 %}
-    <nav>
-      <ul class="pagination">
+    <nav class="mt-3">
+      <ul class="pagination mb-0">
         {% if page_obj.has_prev %}
           <li class="page-item"><a class="page-link" href="{{ url_for('jobs.dashboard', page=page_obj.prev_num, status=status, q=q, month=month) }}">« Prev</a></li>
         {% endif %}
@@ -99,9 +122,103 @@
   <p class="text-muted">No jobs match your filters.</p>
 {% endif %}
 
-<!-- Bar chart -->
-<div style="max-width: 720px; margin: 20px 0;">
-  <canvas id="appsPerMonth"></canvas>
-</div>
+<!-- Charts scripts -->
+<script>
+  // STATUS DOUGHNUT (compact, modern)
+  (function () {
+    const el = document.getElementById('statusPie');
+    if (!el || typeof Chart === "undefined") return;
+    new Chart(el, {
+      type: 'doughnut',
+      data: {
+        labels: ['Applied','Interview','Offer','Rejected'],
+        datasets: [{
+          data: [{{ counts['Applied'] }}, {{ counts['Interview'] }}, {{ counts['Offer'] }}, {{ counts['Rejected'] }}]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom' },
+          title: { display: false },
+          tooltip: { displayColors: false }
+        }
+      }
+    });
+  })();
+
+  // APPLICATIONS PER MONTH (sleek + short)
+  (function () {
+    const el = document.getElementById('appsPerMonth');
+    if (!el || typeof Chart === "undefined") return;
+
+    // Convert "YYYY-MM" -> "Mon ’YY" (e.g., 2025-04 -> Apr ’25)
+    const rawLabels = {{ labels|tojson }};
+    const labels = rawLabels.map(s => {
+      const [y, m] = s.split('-').map(Number);
+      return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short' }) + " ’" + String(y).slice(-2);
+    });
+
+    const values = {{ values|tojson }};
+    const ctx = el.getContext('2d');
+
+    // Subtle gradient
+    const grad = ctx.createLinearGradient(0, 0, 0, el.offsetHeight || 160);
+    grad.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+    grad.addColorStop(1, 'rgba(59, 130, 246, 0.12)');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Applications',
+          data: values,
+          backgroundColor: grad,
+          borderColor: 'rgba(59, 130, 246, 0.8)',
+          borderWidth: 1,
+          borderRadius: 8,
+          barPercentage: 0.55,
+          categoryPercentage: 0.7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 4, right: 8, bottom: 0, left: 8 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            displayColors: false,
+            padding: 10,
+            callbacks: {
+              title: items => items[0].label,
+              label: item => ` ${item.dataset.label}: ${item.formattedValue}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { maxTicksLimit: 6 }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.06)', drawBorder: false },
+            ticks: { precision: 0, maxTicksLimit: 4 }
+          }
+        }
+      }
+    });
+  })();
+</script>
 
 {% endblock %}
+

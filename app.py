@@ -3,7 +3,7 @@ from flask import Flask, jsonify
 from dotenv import load_dotenv
 from config import Config
 from extensions import db, login_manager
-from routes import auth_bp, jobs_bp,
+from routes import auth_bp, jobs_bp
 from models import User 
 from extensions import db, login_manager, migrate  
 from routes.main import main_bp  # Removed due to unresolved import

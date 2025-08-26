@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>New Job</title></head>
+  <body>
+    <h2>Add Job</h2>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        <ul>
+          {% for cat, msg in msgs %}
+            <li><strong>{{cat}}:</strong> {{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('jobs.new_job_submit') }}">
+      <label>Company*</label><br>
+      <input name="company" required><br><br>
+
+      <label>Role*</label><br>
+      <input name="role" required><br><br>
+
+      <label>Status</label><br>
+      <select name="status">
+        <option>Applied</option>
+        <option>Interview</option>
+        <option>Offer</option>
+        <option>Rejected</option>
+      </select><br><br>
+
+      <label>Location</label><br>
+      <input name="location"><br><br>
+
+      <label>Link</label><br>
+      <input name="link" type="url" placeholder="https://..."><br><br>
+
+      <label>Applied On</label><br>
+      <input name="applied_on" type="date" placeholder="YYYY-MM-DD"><br><br>
+
+      <label>Notes</label><br>
+      <textarea name="notes" rows="4" cols="40"></textarea><br><br>
+
+      <button type="submit">Save</button>
+      <a href="{{ url_for('jobs.dashboard') }}">Cancel</a>
+    </form>
+  </body>
+</html>

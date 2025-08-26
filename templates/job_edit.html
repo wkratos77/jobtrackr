@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Edit Job</title></head>
+  <body>
+    <h2>Edit Job</h2>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        <ul>
+          {% for cat, msg in msgs %}
+            <li><strong>{{cat}}:</strong> {{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('jobs.edit_submit', job_id=job.id) }}">
+      <label>Company*</label><br>
+      <input name="company" value="{{ job.company }}" required><br><br>
+
+      <label>Role*</label><br>
+      <input name="role" value="{{ job.role }}" required><br><br>
+
+      <label>Status</label><br>
+      <select name="status">
+        {% for s in ["Applied","Interview","Offer","Rejected"] %}
+          <option value="{{ s }}" {% if job.status==s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select><br><br>
+
+      <label>Location</label><br>
+      <input name="location" value="{{ job.location or '' }}"><br><br>
+
+      <label>Link</label><br>
+      <input name="link" type="url" value="{{ job.link or '' }}"><br><br>
+
+      <label>Applied On</label><br>
+      <input name="applied_on" type="date" value="{{ job.applied_on or '' }}"><br><br>
+
+      <label>Notes</label><br>
+      <textarea name="notes" rows="4" cols="40">{{ job.notes or '' }}</textarea><br><br>
+
+      <button type="submit">Save</button>
+      <a href="{{ url_for('jobs.dashboard') }}">Cancel</a>
+    </form>
+  </body>
+</html>

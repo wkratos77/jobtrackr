@@ -2,8 +2,92 @@
 <html>
   <head><meta charset="utf-8"><title>Dashboard</title></head>
   <body>
-    <h2>Dashboard</h2>
-    <p>Welcome, {{ user.email }}!</p>
-    <p><a href="{{ url_for('auth.logout') }}">Logout</a></p>
+    <h2>Your Jobs</h2>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        <ul>
+          {% for cat, msg in msgs %}
+            <li><strong>{{cat}}:</strong> {{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <p>
+      <a href="{{ url_for('jobs.new_job_form') }}">+ Add Job</a> |
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </p>
+
+    <!-- Summary counts -->
+    <p>
+      <strong>Summary:</strong>
+      Applied: {{ counts['Applied'] }} |
+      Interview: {{ counts['Interview'] }} |
+      Offer: {{ counts['Offer'] }} |
+      Rejected: {{ counts['Rejected'] }} |
+      Total: {{ counts['Total'] }}
+    </p>
+
+    <!-- Filters -->
+    <form method="get" action="{{ url_for('jobs.dashboard') }}" style="margin: 12px 0;">
+      <label>Status:</label>
+      <select name="status">
+        <option value="" {{ '' == status and 'selected' or '' }}>All</option>
+        {% for s in ["Applied","Interview","Offer","Rejected"] %}
+          <option value="{{ s }}" {{ s == status and 'selected' or '' }}>{{ s }}</option>
+        {% endfor %}
+      </select>
+
+      <label style="margin-left:12px;">Search:</label>
+      <input type="text" name="q" value="{{ q or '' }}" placeholder="company or role">
+
+      <label style="margin-left:12px;">Month:</label>
+      <input type="month" name="month" value="{{ month or '' }}">
+
+      <button type="submit" style="margin-left:12px;">Filter</button>
+      <a href="{{ url_for('jobs.dashboard') }}" style="margin-left:8px;">Reset</a>
+    </form>
+
+    {% if jobs %}
+      <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Applied On</th>
+            <th>Link</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for j in jobs %}
+            <tr>
+              <td>{{ j.company }}</td>
+              <td>{{ j.role }}</td>
+              <td>{{ j.status }}</td>
+              <td>{{ j.applied_on or "" }}</td>
+              <td>{% if j.link %}<a href="{{ j.link }}" target="_blank">Open</a>{% endif %}</td>
+              <td>
+                <a href="{{ url_for('jobs.edit_form', job_id=j.id) }}">Edit</a>
+                |
+                <form action="{{ url_for('jobs.delete', job_id=j.id) }}" method="post" style="display:inline" onsubmit="return confirm('Delete this job?');">
+                  <button type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No jobs match your filters.</p>
+    {% endif %}
   </body>
 </html>
+<p>
+  <a href="{{ url_for('jobs.new_job_form') }}">+ Add Job</a> |
+  <a href="{{ url_for('jobs.export_csv') }}">Export CSV</a> |
+  <a href="{{ url_for('auth.logout') }}">Logout</a>
+</p>
+

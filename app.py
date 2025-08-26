@@ -8,7 +8,7 @@ from models import User
 from extensions import db, login_manager, migrate  
 
 def create_app():
-    load_dotenv()
+    load_dotenv() # Load environment variables from .env file
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -24,7 +24,7 @@ def create_app():
 
     @app.get("/")
     def home():
-        return "Hello from JobTrackr 👋"
+        return "Mr7ba biiiiik 👋"
 
     @app.get("/healthz")
     def healthz():

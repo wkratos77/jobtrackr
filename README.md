@@ -45,39 +45,31 @@ Easily register, log in, and manage your job applications with a clean dashboard
 
 ## ⚙️ Setup & Installation
 
-1. **Clone the repo**:    
-   ```bash ```
-   git clone https://github.com/wkratos77/jobtrackr.git    
-   ```bash ```
-   cd jobtrackr
+```bash
+# 1. Clone the repo
+git clone https://github.com/YOUR-USERNAME/jobtrackr.git
+cd jobtrackr
 
-2. **Create virtual environment**:    
-   ```bash```   
-  python3 -m venv .venv       
-   ```bash```   
-  source .venv/bin/activate   # Linux/Mac    
-  .venv\Scripts\activate      # Windows    
+# 2. Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate   # Linux/Mac
+.venv\Scripts\activate      # Windows
 
+# 3. Install dependencies
+pip install -r requirements.txt
 
-3. **Install dependencies**:    
-     ```bash```
-    pip install -r requirements.txt
+# 4. Set environment variables (create .env file)
+# .env
+FLASK_APP=app
+FLASK_ENV=development
+SECRET_KEY=your-secret-key
 
+# 5. Run migrations
+flask --app app db upgrade
 
-4. **Set environment variables (create .env file)**:    
-  FLASK_APP=app      
-  FLASK_ENV=development     
-  SECRET_KEY=your-secret-key   
-
-
-5. **Run migrations**:    
-   ```bash```
-  flask db upgrade
-
-
-6. **Start the app**:    
-  ```bash```
-  flask run    
+# 6. Start the app
+flask --app app run --debug
+```
 
 Visit: http://127.0.0.1:5000
 
@@ -85,6 +77,11 @@ Visit: http://127.0.0.1:5000
 
 ## 📸 Screenshots
 
+### Dashboard with Filters + Charts
+![Dashboard Screenshot](docs/dashboard.png)
+
+### Add Job Form
+![New Job Screenshot](docs/new_job.png)
 
 ---
 

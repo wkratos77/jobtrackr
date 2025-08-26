@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+  <div class="text-center">
+    <h1 class="mb-3">JobTrackr</h1>
+    <p class="text-muted mb-4">Track your job applications, visualize progress, and stay organized.</p>
+    <a class="btn btn-primary me-2" href="{{ url_for('auth.login_form') }}">Login</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('auth.register_form') }}">Register</a>
+  </div>
+</div>
+{% endblock %}

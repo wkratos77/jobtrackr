@@ -81,13 +81,20 @@ Visit: http://127.0.0.1:5000
 ![Dashboard Screenshot](docs/dashboard.png)
 
 ### Add Job Form
-![New Job Screenshot](docs/new_job.png)
+![New Job Screenshot](docs/addjob.png)
+
+### Login Form
+![Login Screenshot](docs/login.png)
+
+### Register Form
+![New Job Screenshot](docs/register.png)
+
 
 ---
 
-## 🧭 Roadmap (Future Ideas)
+## 🧭 Future Ideas
 
-- Deploy online (Render/Railway/Heroku).
+- Deploy online.
 
 - Add email reminders for interviews.
 

@@ -1,1 +1,1 @@
-web: gunicorn app:create_app()gi
+web: gunicorn -w 2 -k gthread -b 0.0.0.0:$PORT app:create_app()

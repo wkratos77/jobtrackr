@@ -1,6 +1,11 @@
 <!doctype html>
 <html>
-  <head><meta charset="utf-8"><title>Dashboard</title></head>
+  <head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+    <!-- Load Chart.js once, before any chart scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
   <body>
     <h2>Your Jobs</h2>
 
@@ -16,6 +21,7 @@
 
     <p>
       <a href="{{ url_for('jobs.new_job_form') }}">+ Add Job</a> |
+      <a href="{{ url_for('jobs.export_csv') }}">Export CSV</a> |
       <a href="{{ url_for('auth.logout') }}">Logout</a>
     </p>
 
@@ -28,6 +34,39 @@
       Rejected: {{ counts['Rejected'] }} |
       Total: {{ counts['Total'] }}
     </p>
+
+    <!-- Status Pie + quick rates -->
+    <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap; margin:12px 0;">
+      <div style="width:320px; max-width:100%;">
+        <canvas id="statusPie"></canvas>
+      </div>
+      <div>
+        <p><strong>Rates</strong></p>
+        <p>Interview rate: {{ rates.interview_rate if rates else 0 }}%</p>
+        <p>Offer rate: {{ rates.offer_rate if rates else 0 }}%</p>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const pieCtx = document.getElementById('statusPie').getContext('2d');
+        const pieLabels = ['Applied','Interview','Offer','Rejected'];
+        const pieData   = [
+          {{ counts['Applied'] }},
+          {{ counts['Interview'] }},
+          {{ counts['Offer'] }},
+          {{ counts['Rejected'] }}
+        ];
+        new Chart(pieCtx, {
+          type: 'pie',
+          data: { labels: pieLabels, datasets: [{ data: pieData }] },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: 'right' }, title: { display: true, text: 'Status Breakdown' } }
+          }
+        });
+      })();
+    </script>
 
     <!-- Filters -->
     <form method="get" action="{{ url_for('jobs.dashboard') }}" style="margin: 12px 0;">
@@ -80,14 +119,46 @@
           {% endfor %}
         </tbody>
       </table>
+
+      {% if page_obj %}
+        {% if page_obj.pages > 1 %}
+          <div style="margin-top:12px;">
+            {% if page_obj.has_prev %}
+              <a href="{{ url_for('jobs.dashboard', page=page_obj.prev_num, status=status, q=q, month=month) }}">« Prev</a>
+            {% endif %}
+            <span style="margin:0 8px;">Page {{ page_obj.page }} / {{ page_obj.pages }}</span>
+            {% if page_obj.has_next %}
+              <a href="{{ url_for('jobs.dashboard', page=page_obj.next_num, status=status, q=q, month=month) }}">Next »</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endif %}
     {% else %}
       <p>No jobs match your filters.</p>
     {% endif %}
+
+    <!-- Bar chart: Applications per Month -->
+    <div style="max-width: 720px; margin: 12px 0;">
+      <canvas id="appsPerMonth"></canvas>
+    </div>
+    <script>
+      (function(){
+        const labels = {{ labels|tojson }};
+        const data   = {{ values|tojson }};
+        const ctx = document.getElementById('appsPerMonth').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: { labels, datasets: [{ label: 'Applications per Month', data }] },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { title: { display: true, text: 'Month' } },
+              y: { title: { display: true, text: 'Applications' }, beginAtZero: true, ticks: { precision: 0 } }
+            }
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
-<p>
-  <a href="{{ url_for('jobs.new_job_form') }}">+ Add Job</a> |
-  <a href="{{ url_for('jobs.export_csv') }}">Export CSV</a> |
-  <a href="{{ url_for('auth.logout') }}">Logout</a>
-</p>
-

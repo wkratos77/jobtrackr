@@ -1,5 +1,7 @@
-<!doctype html>
-<html>
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
   <head><meta charset="utf-8"><title>Edit Job</title></head>
   <body>
     <h2>Edit Job</h2>
@@ -44,4 +46,6 @@
       <a href="{{ url_for('jobs.dashboard') }}">Cancel</a>
     </form>
   </body>
-</html>
+  
+{% endblock %}
+

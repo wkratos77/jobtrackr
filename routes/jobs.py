@@ -7,6 +7,8 @@ from datetime import date
 from sqlalchemy import extract
 import csv
 from io import StringIO
+from sqlalchemy import func
+
 
 @jobs_bp.get("/dashboard")
 @login_required
@@ -44,7 +46,18 @@ def dashboard():
 
 
     jobs = filtered.order_by(Job.created_at.desc()).all()
-    # --- counts for sidebar ---
+
+    page = int(request.args.get("page", 1))
+    per_page = 10  # tweak later if you like
+
+    page_obj = db.paginate(
+        filtered.order_by(Job.created_at.desc()),
+        page=page,
+        per_page=per_page,
+        error_out=False,
+    )
+
+    jobs = page_obj.items    
     counts = {
         "Applied":   base.filter(Job.status == "Applied").count(),
         "Interview": base.filter(Job.status == "Interview").count(),
@@ -52,6 +65,23 @@ def dashboard():
         "Rejected":  base.filter(Job.status == "Rejected").count(),
         "Total":     base.count(),
     }
+
+    total = counts["Total"] or 0
+    rates = {
+        "interview_rate": round((counts["Interview"] / total) * 100, 1) if total else 0.0,
+        "offer_rate":     round((counts["Offer"]     / total) * 100, 1) if total else 0.0,
+    }
+
+    monthly_rows = (
+    db.session.query(func.strftime("%Y-%m", Job.applied_on), func.count())
+        .filter(Job.user_id == current_user.id, Job.applied_on.isnot(None))
+        .group_by(func.strftime("%Y-%m", Job.applied_on))
+        .order_by(func.strftime("%Y-%m", Job.applied_on))
+        .all()
+    )
+
+    labels = [row[0] for row in monthly_rows]  # e.g., ["2025-07","2025-08"]
+    values = [row[1] for row in monthly_rows]
 
     return render_template(
         "dashboard.html",
@@ -61,6 +91,10 @@ def dashboard():
         status=status,
         q=q,
         month=month,
+        labels=labels,
+        values=values,
+        page_obj=page_obj,
+        rates=rates, 
     )
 
 @jobs_bp.get("/new")

@@ -5,6 +5,13 @@ Easily register, log in, and manage your job applications with a clean dashboard
 
 ---
 
+## 🚀 Live Demo
+👉 [Try JobTrackr here](https://wkratos77.pythonanywhere.com)
+
+*(Test it out: register a free account, add jobs, filter, and see charts.)*
+
+---
+
 ## 🚀 Features
 
 - 🔐 **User Authentication**  
@@ -92,12 +99,36 @@ Visit: http://127.0.0.1:5000
 
 ---
 
+## 📂 Project Structure
+``` csharp
+jobtrackr/    
+├── app.py                         # Flask entrypoint    
+├── config.py                      # App configuration    
+├── extensions.py                  # db, migrate, login_manager    
+├── models.py                      # SQLAlchemy models    
+├── routes/                        # Blueprints (auth, jobs, main)      
+├── templates/                     # HTML templates (Jinja2)    
+├── static/                        # Static files    
+├── requirements.txt               # Dependencies    
+├── Procfile                       # (for deployment)    
+└── README.md               
+```
+---
+
 ## 🧭 Future Ideas
 
-- Deploy online.
+- Deploy online.                       ☑️
 
 - Add email reminders for interviews.
 
 - Multi-user sharing / teams.
 
 - Dark mode.
+
+- Switch to PostgreSQL for production
+  
+- Add job reminders / follow-up notifications
+
+- More analytics (time-to-offer, conversion rates)
+
+- User profile customization

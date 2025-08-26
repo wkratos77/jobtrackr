@@ -1,5 +1,22 @@
 # 📊 JobTrackr
 
+<p align="center">
+  <!-- Core stack -->
+  <img src="https://img.shields.io/badge/Language-Python-3776AB?style=for-the-badge" alt="Python">
+  <img src="https://img.shields.io/badge/Framework-Flask-000000?style=for-the-badge" alt="Flask">
+  <img src="https://img.shields.io/badge/Database-SQLAlchemy-CCA877?style=for-the-badge" alt="SQLAlchemy">
+  
+  <!-- Deployment & tools -->
+  <img src="https://img.shields.io/badge/Template-Jinja2-B41717?style=for-the-badge" alt="Jinja2">
+  <img src="https://img.shields.io/badge/Auth-Login%20Manager-4CAF50?style=for-the-badge" alt="Flask-Login">
+  
+  <!-- Project info -->
+  <img src="https://img.shields.io/badge/Hosted_on-PythonAnywhere-3F7DCE?style=for-the-badge" alt="Hosted on PythonAnywhere">
+  <img src="https://img.shields.io/badge/Status-Active--Live-success?style=for-the-badge" alt="Status: Active">
+  <img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-red?style=for-the-badge" alt="License: All Rights Reserved">
+</p>
+
+
 A simple yet powerful **Job Application Tracker** built with **Flask + SQLAlchemy + Bootstrap + Chart.js**.  
 Easily register, log in, and manage your job applications with a clean dashboard, filters, and visualizations.  
 

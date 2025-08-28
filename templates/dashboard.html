@@ -37,7 +37,7 @@
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <h5 class="card-title mb-2">Applications per Month</h5>
-        <div style="height:160px;">
+        <div style="height:300px; max-width:500px; margin:0 auto;">
           <canvas id="appsPerMonth"></canvas>
         </div>
       </div>
@@ -207,12 +207,15 @@
         scales: {
           x: {
             grid: { display: false },
-            ticks: { maxTicksLimit: 6 }
+            ticks: { maxTicksLimit: 6 },
+            title: { display: true, text: 'Month' }
+
           },
           y: {
             beginAtZero: true,
             grid: { color: 'rgba(0,0,0,0.06)', drawBorder: false },
-            ticks: { precision: 0, maxTicksLimit: 4 }
+            ticks: { precision: 0, maxTicksLimit: 4 },
+            title: { display: true, text: 'Applications' } 
           }
         }
       }
